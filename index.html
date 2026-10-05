@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Présentation – Mahamat Oumar Moussa Houma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   DESIGN TOKENS
+   Palette tirée du drapeau tchadien : bleu nuit, or, rouge (en touche).
+   ===================================================================== */
+:root{
+  --night:#04060c;
+  --deep:#0a1230;
+  --blue:#2a56e8;
+  --gold:#f5b700;
+  --red:#c8102e;
+  --ink:#f3efe6;
+  --mute:rgba(243,239,230,.55);
+  --display:'Syne','Segoe UI',system-ui,sans-serif;
+  --body:'Manrope','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden}
+#app{position:fixed;inset:0;display:grid;place-items:center}
+#stage{position:relative;overflow:hidden;background:var(--night);color:var(--ink);font-family:var(--body);user-select:none}
+
+/* ---------- Fond permanent ---------- */
+#fx{position:absolute;inset:0;width:100%;height:100%}
+.glow{position:absolute;border-radius:50%;filter:blur(6em);opacity:.5;mix-blend-mode:screen;pointer-events:none}
+.glow.a{width:60em;height:60em;left:-15em;top:-20em;background:radial-gradient(circle,#1c3fb8 0%,transparent 70%);animation:floatA 22s ease-in-out infinite alternate}
+.glow.b{width:46em;height:46em;right:-10em;bottom:-22em;background:radial-gradient(circle,#b8860b 0%,transparent 70%);opacity:.32;animation:floatB 26s ease-in-out infinite alternate}
+@keyframes floatA{to{transform:translate(14em,10em)}}
+@keyframes floatB{to{transform:translate(-12em,-8em)}}
+.floor{position:absolute;left:-30%;right:-30%;bottom:-8%;height:55%;
+  background:
+   repeating-linear-gradient(90deg,rgba(80,120,255,.16) 0 1px,transparent 1px 6em),
+   repeating-linear-gradient(0deg,rgba(80,120,255,.16) 0 1px,transparent 1px 5em);
+  transform:perspective(40em) rotateX(68deg);transform-origin:bottom;
+  -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 80%);mask-image:linear-gradient(to top,#000 0%,transparent 80%);
+  opacity:.55;animation:floorMove 6s linear infinite}
+@keyframes floorMove{to{background-position:0 0,0 5em}}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.75) 100%)}
+.grain{position:absolute;inset:0;pointer-events:none;opacity:.08;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.bars{position:absolute;left:0;right:0;height:5.2em;background:#000;z-index:30;pointer-events:none}
+.bars.top{top:0}.bars.bot{bottom:0}
+
+/* ---------- Scènes ---------- */
+.scene{position:absolute;inset:0;opacity:0;filter:blur(.7em);transform:scale(1.05);pointer-events:none;
+  transition:opacity 1s ease,filter 1s ease,transform 1.6s cubic-bezier(.2,.7,.1,1)}
+.scene.active{opacity:1;filter:none;transform:none}
+.cam{position:absolute;inset:0}
+.scene.active .cam{animation:drift 12s ease-out forwards}
+@keyframes drift{from{transform:scale(1)}to{transform:scale(1.045) translateX(-.6em)}}
+
+/* ---------- Révélations ---------- */
+.r{opacity:0;transition:opacity 1.2s ease,transform 1.4s cubic-bezier(.2,.8,.1,1),filter 1.2s ease}
+.r.in{opacity:1}
+.up{transform:translateY(1.6em);filter:blur(.4em)}.up.in{transform:none;filter:none}
+.wipe{opacity:1;clip-path:inset(0 100% 0 0);transition:clip-path 1.3s cubic-bezier(.7,0,.2,1)}
+.wipe.in{clip-path:inset(0 0 0 0)}
+.scaleX{opacity:1;transform:scaleX(0);transition:transform 1.8s cubic-bezier(.7,0,.2,1)}
+.scaleX.in{transform:scaleX(1)}
+.scaleY{opacity:1;transform:scaleY(0);transform-origin:top;transition:transform 1.6s cubic-bezier(.7,0,.2,1)}
+.scaleY.in{transform:scaleY(1)}
+
+.split .w{display:inline-block;white-space:nowrap}
+.split .ch{display:inline-block;opacity:0;transform:scale(1.45);filter:blur(.55em);
+  transition:opacity .9s ease,transform 1.2s cubic-bezier(.2,.8,.1,1),filter .9s ease}
+.split.in .ch{opacity:1;transform:none;filter:none}
+.dim{opacity:.28!important;transition:opacity 1s ease!important}
+
+.draw{fill:none;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2.2s cubic-bezier(.6,0,.2,1)}
+.in .draw,.draw.in{stroke-dashoffset:0}
+
+/* ---------- Typographie ---------- */
+.mega{font:800 12em/.95 var(--display);letter-spacing:-.025em;
+  background:linear-gradient(180deg,#fff7df 0%,#f5b700 70%,#a97a00 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mega .ch{-webkit-text-fill-color:transparent}
+.title{font:800 6.4em/1 var(--display);letter-spacing:-.02em;white-space:nowrap}
+.label{font:300 1.5em/1 var(--body);letter-spacing:.35em;color:var(--mute);text-transform:uppercase}
+.lead{font:300 2em/1.3 var(--body);color:var(--mute)}
+.abs{position:absolute}
+
+/* S1 */
+#s1 .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.2em}
+#s1-line{width:34em;height:.12em;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+#s1-hello{font:700 9em/1 var(--display);letter-spacing:-.02em}
+#s1-sub{font:300 2.4em/1 var(--body);color:var(--mute);letter-spacing:.12em}
+
+/* S2 */
+#s2 .col{position:absolute;left:12em;top:50%;transform:translateY(-50%)}
+#s2-bar{position:absolute;left:8.4em;top:12em;width:.22em;height:32em;background:linear-gradient(var(--gold),transparent)}
+#s2 .label{margin-bottom:1.2em}
+#s2-nom{margin-bottom:2.4em}
+#s2-pre{font:700 4.6em/1 var(--display);letter-spacing:.01em}
+#s2-pre .w:not(:first-child){margin-left:.35em}
+.beam{position:absolute;right:6em;top:-10%;width:10em;height:130%;transform:rotate(18deg);
+  background:linear-gradient(90deg,transparent,rgba(245,183,0,.14),transparent);filter:blur(1em)}
+
+/* S3 */
+#s3 .center{position:absolute;inset:0;display:grid;place-items:center}
+#s3 svg{position:absolute;width:46em;height:46em;opacity:.0;transition:opacity 2s ease}
+#s3 svg.in{opacity:.7}
+#s3-ring{animation:spin 40s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#s3-num{font:800 30em/.8 var(--display);letter-spacing:-.04em;position:relative;
+  background:linear-gradient(180deg,#fff7df,#f5b700 65%,#8a6100);-webkit-background-clip:text;background-clip:text;color:transparent}
+#s3-ans{position:absolute;left:50%;top:76%;transform:translateX(-50%) scale(1);font:700 3.6em/1 var(--display)}
+
+/* S4 */
+#s4 .fac{position:absolute;left:10em;top:9em;width:30em;height:30em}
+#s4 .fac path{stroke:var(--ink);stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+#s4 .fac .gold{stroke:var(--gold)}
+#s4 .txt{position:absolute;left:44em;top:50%;transform:translateY(-50%)}
+#s4-soc{font-size:6.2em}
+#s4-lic{display:inline-block;margin-top:2.2em;padding:.9em 1.8em;border:.12em solid var(--gold);color:var(--gold);
+  font:700 2.6em/1 var(--display);letter-spacing:.2em;border-radius:99em;background:rgba(245,183,0,.06)}
+
+/* S5 */
+#s5 .list{position:absolute;left:9em;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:3em}
+#s5 .row{font:800 4.4em/1.02 var(--display);letter-spacing:-.01em}
+#s5 .row.g{color:var(--gold)}
+.viz{position:absolute;left:56em;top:8em;width:36em;height:40em;opacity:0;transform:scale(.94);transition:opacity 1.2s ease,transform 1.6s cubic-bezier(.2,.8,.1,1)}
+.viz.in{opacity:1;transform:none}
+.viz svg{width:100%;height:100%;overflow:visible}
+.code{position:absolute;inset:3em 0;border:.1em solid rgba(110,150,255,.35);border-radius:1.4em;background:rgba(10,18,48,.6);padding:2.6em 2.4em;box-shadow:0 0 6em rgba(42,86,232,.25)}
+.code .dots{display:flex;gap:.7em;margin-bottom:2em}.code .dots i{width:1em;height:1em;border-radius:50%;background:var(--red)}
+.code .dots i:nth-child(2){background:var(--gold)}.code .dots i:nth-child(3){background:#37c26a}
+.code .ln{height:.9em;border-radius:1em;margin-bottom:1.15em;width:0;background:linear-gradient(90deg,#5b8bff,#9fb8ff);transition:width 1.1s cubic-bezier(.2,.8,.1,1)}
+.code .ln.y{background:linear-gradient(90deg,var(--gold),#ffe08a)}
+.viz.in .ln{width:var(--w)}
+.node{fill:#0a1230;stroke:#8aa8ff;stroke-width:1.2}
+.pulse{animation:pulse 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{50%{transform:scale(1.5);opacity:.4}}
+.scan{animation:scan 2.6s ease-in-out infinite alternate}
+@keyframes scan{from{transform:translateY(0)}to{transform:translateY(46px)}}
+
+/* S6 */
+#s6 .map{position:absolute;left:10em;top:6em;width:34em;height:46em}
+#s6 .map svg{width:100%;height:100%;overflow:visible}
+#s6 .outline{stroke:var(--gold);stroke-width:1.4;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.ping{fill:none;stroke:var(--gold);stroke-width:1.5;animation:ping 2.6s ease-out infinite;transform-box:fill-box;transform-origin:center}
+.ping.p2{animation-delay:1.3s}
+@keyframes ping{from{transform:scale(.3);opacity:1}to{transform:scale(4);opacity:0}}
+#s6 .txt{position:absolute;left:52em;top:50%;transform:translateY(-50%)}
+#s6-city{font-size:6.6em}
+#s6-coord{margin-top:1.6em}
+#s6-country{margin-top:2.2em;display:flex;align-items:center;gap:1.6em}
+#s6-country b{font:800 4em/1 var(--display);color:var(--gold);letter-spacing:.06em}
+.flag{display:flex;height:3.2em;width:6em;border-radius:.3em;overflow:hidden}
+.flag i{flex:1}.flag i:nth-child(1){background:#002664}.flag i:nth-child(2){background:#fecb00}.flag i:nth-child(3){background:#c60c30}
+
+/* S7 */
+#s7 .portrait{position:absolute;left:13em;top:7.2em;width:31em;height:42em}
+.pframe{position:absolute;inset:0;overflow:hidden;border-radius:.4em;box-shadow:0 0 8em rgba(42,86,232,.45),0 0 3em rgba(245,183,0,.2)}
+.pframe img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%;animation:kb 14s ease-out forwards}
+@keyframes kb{from{transform:scale(1.14) translateY(1.2em)}to{transform:scale(1.02) translateY(0)}}
+.pframe .fallback{position:absolute;inset:0;display:none;place-items:center;font:800 9em var(--display);color:var(--gold);background:linear-gradient(160deg,#0a1230,#04060c)}
+.pframe.err .fallback{display:grid}.pframe.err img{display:none}
+.pframe .shine{position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,240,200,.28) 50%,transparent 65%);transform:translateX(-120%);animation:shine 3.2s 1.2s ease-in-out forwards}
+@keyframes shine{to{transform:translateX(120%)}}
+.pframe::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(4,6,12,.55),transparent 45%)}
+.corner{position:absolute;width:3em;height:3em;border:0 solid var(--gold);z-index:2}
+.corner.tl{left:-1.2em;top:-1.2em;border-width:.14em 0 0 .14em}.corner.tr{right:-1.2em;top:-1.2em;border-width:.14em .14em 0 0}
+.corner.bl{left:-1.2em;bottom:-1.2em;border-width:0 0 .14em .14em}.corner.br{right:-1.2em;bottom:-1.2em;border-width:0 .14em .14em 0}
+#s7 .portrait.r{transform:scale(.9) translateY(1em);filter:blur(.6em);transition:opacity 1.6s ease,transform 2s cubic-bezier(.2,.8,.1,1),filter 1.6s}
+#s7 .portrait.r.in{transform:none;filter:none}
+#s7 .id{position:absolute;left:52em;top:9em}
+#s7 .id h2{font:800 7.4em/.98 var(--display);letter-spacing:-.025em}
+#s7-sur{margin-top:.5em;font:800 4.6em/1 var(--display);letter-spacing:.08em;color:transparent;-webkit-text-stroke:.03em var(--gold)}
+#s7 .sig{position:absolute;left:52em;top:42em;width:34em}
+#s7 .sig svg{width:20em;height:4em;overflow:visible}
+#s7 .sig path{stroke:var(--gold);stroke-width:1.6;stroke-linecap:round;vector-effect:non-scaling-stroke}
+#s7-tag{margin-top:1.2em;font:300 1.9em/1.35 var(--body);color:var(--mute)}
+
+/* ---------- Sous-titres, fondu final ---------- */
+#cap{position:absolute;left:0;right:0;bottom:6.6em;text-align:center;font:400 2em/1.2 var(--body);color:var(--ink);opacity:0;transition:opacity .5s;z-index:20;text-shadow:0 .1em .5em #000}
+#cap.on{opacity:.92}
+#black{position:absolute;inset:0;background:#000;opacity:0;transition:opacity 1.6s ease;z-index:25;pointer-events:none}
+#black.on{opacity:1}
+
+/* ---------- Écran de lancement et contrôles ---------- */
+#start{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(ellipse at 30% 20%,#0d1a4a,#04060c 65%);color:var(--ink);font-family:var(--body);padding:1.5rem}
+#start .box{width:min(30rem,100%);display:flex;flex-direction:column;gap:1.1rem}
+#start h1{font:800 clamp(1.8rem,6vw,2.8rem)/1.05 var(--display);letter-spacing:-.02em}
+#start p{color:var(--mute);font-weight:300;line-height:1.5}
+#start label{display:flex;align-items:center;gap:.7rem;font-size:.95rem}
+#start input[type=checkbox]{accent-color:var(--gold);width:1.1rem;height:1.1rem}
+#start .file{display:flex;flex-direction:column;gap:.3rem;font-size:.85rem;color:var(--mute)}
+#start .file input{font-size:.8rem;color:var(--ink)}
+button.go{margin-top:.6rem;padding:1rem 1.6rem;border:0;border-radius:99rem;background:var(--gold);color:#1a1200;font:700 1rem var(--display);cursor:pointer}
+#ctrl{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:40;display:flex;gap:.5rem;opacity:0;transition:opacity .4s}
+#ctrl.show,#app:hover~#ctrl{opacity:1}
+#ctrl button{padding:.55rem 1rem;border-radius:99rem;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.55);color:var(--ink);font:500 .85rem var(--body);cursor:pointer;backdrop-filter:blur(6px)}
+@media (prefers-reduced-motion:reduce){.floor,.glow{animation:none}}
+</style>
+</head>
+<body>
+
+<div id="app">
+ <div id="stage">
+  <canvas id="fx"></canvas>
+  <div class="glow a"></div><div class="glow b"></div>
+  <div class="floor"></div>
+
+  <!-- ============ SCÈNE 1 · INTRODUCTION ============ -->
+  <section class="scene" id="s1"><div class="cam"><div class="center">
+    <div id="s1-line" class="scaleX"></div>
+    <h1 id="s1-hello" class="split">Bonjour</h1>
+    <p id="s1-sub" class="wipe">voici qui je suis</p>
+  </div></div></section>
+
+  <!-- ============ SCÈNE 2 · IDENTITÉ ============ -->
+  <section class="scene" id="s2"><div class="cam">
+    <div class="beam"></div>
+    <div id="s2-bar" class="scaleY"></div>
+    <div class="col">
+      <p class="label r up" id="s2-l1">Nom</p>
+      <h2 class="mega split" id="s2-nom">MAHAMAT</h2>
+      <p class="label r up" id="s2-l2">Prénom</p>
+      <h3 class="split" id="s2-pre">OUMAR MOUSSA HOUMA</h3>
+    </div>
+  </div></section>
+
+  <!-- ============ SCÈNE 3 · ÂGE ============ -->
+  <section class="scene" id="s3"><div class="cam"><div class="center">
+    <svg id="s3-ring" viewBox="0 0 100 100" class="r">
+      <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(245,183,0,.55)" stroke-width=".25" stroke-dasharray=".4 1.6"/>
+      <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(110,150,255,.4)" stroke-width=".2"/>
+    </svg>
+    <div id="s3-num" class="r">0</div>
+    <div id="s3-ans" class="split">ANS</div>
+  </div></div></section>
+
+  <!-- ============ SCÈNE 4 · ÉTUDES ============ -->
+  <section class="scene" id="s4"><div class="cam">
+    <svg class="fac" id="s4-fac" viewBox="0 0 100 100">
+      <path class="draw gold" pathLength="1" d="M8 32 L50 10 L92 32 Z"/>
+      <path class="draw" pathLength="1" style="transition-delay:.4s" d="M8 38 H92"/>
+      <path class="draw" pathLength="1" style="transition-delay:.7s" d="M18 44 V80"/>
+      <path class="draw" pathLength="1" style="transition-delay:.9s" d="M34 44 V80"/>
+      <path class="draw" pathLength="1" style="transition-delay:1.1s" d="M50 44 V80"/>
+      <path class="draw" pathLength="1" style="transition-delay:1.3s" d="M66 44 V80"/>
+      <path class="draw" pathLength="1" style="transition-delay:1.5s" d="M82 44 V80"/>
+      <path class="draw gold" pathLength="1" style="transition-delay:1.8s" d="M6 86 H94 M2 92 H98"/>
+    </svg>
+    <div class="txt">
+      <h2 class="title split" id="s4-soc">SOCIOLOGIE</h2>
+      <div id="s4-lic" class="r up">LICENCE 2</div>
+    </div>
+  </div></section>
+
+  <!-- ============ SCÈNE 5 · PASSIONS ============ -->
+  <section class="scene" id="s5"><div class="cam">
+    <div class="list">
+      <div class="row split" id="s5-w1">INFORMATIQUE</div>
+      <div class="row split g" id="s5-w2">INTELLIGENCE ARTIFICIELLE</div>
+      <div class="row split" id="s5-w3">CYBERSÉCURITÉ</div>
+    </div>
+    <div class="viz" id="s5-v1"><div class="code" id="codebox"></div></div>
+    <div class="viz" id="s5-v2"><svg viewBox="0 0 100 100" id="nnet"></svg></div>
+    <div class="viz" id="s5-v3"><svg viewBox="0 0 100 100">
+      <path class="draw" pathLength="1" stroke="#f5b700" stroke-width="1.6" d="M50 6 L88 20 V50 C88 74 70 90 50 96 C30 90 12 74 12 50 V20 Z"/>
+      <path class="draw" pathLength="1" style="transition-delay:1s" stroke="#8aa8ff" stroke-width="1.2" d="M34 50 L46 62 L68 38"/>
+      <g class="scan"><rect x="16" y="26" width="68" height=".8" fill="#f5b700" opacity=".8"/></g>
+    </svg></div>
+  </div></section>
+
+  <!-- ============ SCÈNE 6 · LIEU ============ -->
+  <section class="scene" id="s6"><div class="cam">
+    <div class="map r" id="s6-map"><svg viewBox="0 0 100 140" id="chadmap">
+      <defs><pattern id="dots" width="3.2" height="3.2" patternUnits="userSpaceOnUse"><circle cx="1.6" cy="1.6" r=".5" fill="#6f93ff" opacity=".7"/></pattern></defs>
+    </svg></div>
+    <div class="txt">
+      <h2 class="title split" id="s6-city">N'DJAMENA</h2>
+      <p class="label r up" id="s6-coord">12°06′ N, 15°02′ E</p>
+      <div id="s6-country" class="r up"><div class="flag"><i></i><i></i><i></i></div><b>TCHAD</b></div>
+    </div>
+  </div></section>
+
+  <!-- ============ SCÈNE 7 · PRÉSENTATION PERSONNELLE ============ -->
+  <section class="scene" id="s7"><div class="cam">
+    <div class="portrait r" id="s7-photo">
+      <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+      <div class="pframe" id="pframe">
+        <img id="photo" alt="Portrait de Mahamat Oumar Moussa Houma">
+        <div class="fallback">OMH</div>
+        <div class="shine"></div>
+      </div>
+    </div>
+    <div class="id">
+      <h2 class="split" id="s7-a">OUMAR</h2>
+      <h2 class="split" id="s7-b">MOUSSA</h2>
+      <h2 class="split" id="s7-c">HOUMA</h2>
+      <div id="s7-sur" class="split">MAHAMAT</div>
+    </div>
+    <div class="sig">
+      <svg viewBox="0 0 160 40" id="s7-sig"><path class="draw" pathLength="1" fill="none" d="M4 30 C30 -6 40 46 70 18 S116 4 156 24"/></svg>
+      <p id="s7-tag" class="r up">Étudiant en sociologie,<br>passionné de technologie.</p>
+    </div>
+  </div></section>
+
+  <div class="vignette"></div><div class="grain"></div>
+  <div class="bars top"></div><div class="bars bot"></div>
+  <div id="cap"></div>
+  <div id="black"></div>
+ </div>
+</div>
+
+<div id="ctrl">
+  <button id="bPause">Pause</button>
+  <button id="bRestart">Recommencer</button>
+  <button id="bFull">Plein écran</button>
+</div>
+
+<div id="start"><div class="box">
+  <h1>Présentation personnelle</h1>
+  <p>Une vidéo d'environ 50 secondes, synchronisée sur la narration. Mettez le son. Mieux vaut un écran en paysage.</p>
+  <label><input type="checkbox" id="optVoice" checked> Voix off (voix française du navigateur)</label>
+  <label><input type="checkbox" id="optMusic" checked> Musique d'ambiance et effets sonores</label>
+  <label class="file">Votre propre voix off (optionnel, démarre à 0:00)<input type="file" id="fileVoice" accept="audio/*"></label>
+  <label class="file">Votre propre musique (optionnel)<input type="file" id="fileMusic" accept="audio/*"></label>
+  <button class="go" id="bGo">Lancer la vidéo</button>
+</div></div>
+
+<script>
+/* =====================================================================
+   1. CONFIGURATION (tout ce que vous voudrez modifier est ici)
+   ===================================================================== */
+const CONFIG = {
+  image: "https://image.zaw-myo.workers.dev/image/165c8713-59d7-44e6-9048-13ca69b89a73",
+  voiceLang: "fr-FR",
+  voiceRate: 0.95,          // vitesse de la voix de synthèse
+  musicVolume: 0.35,        // volume de votre fichier musique (0 à 1)
+  total: 49.5               // durée totale en secondes
+};
+
+/* =====================================================================
+   2. TIMELINE
+   Chaque ligne = un moment précis (t en secondes depuis le début).
+   scene : active une scène (les autres s'éteignent)
+   show / hide : ajoute / retire l'animation d'entrée des éléments
+   dim   : atténue des éléments
+   say   : phrase prononcée par la voix + sous-titre
+   count : compteur animé   sfx : 'whoosh' ou 'hit'   energy : intensité des particules
+   ===================================================================== */
+const CUES = [
+  /* 1 · INTRODUCTION */
+  {t:0.0,  scene:'s1', energy:.5},
+  {t:0.8,  show:['#s1-line']},
+  {t:1.3,  say:"Bonjour, je me présente.", show:['#s1-hello']},
+  {t:3.6,  say:"Voici qui je suis."},
+  {t:4.0,  show:['#s1-sub']},
+
+  /* 2 · IDENTITÉ */
+  {t:5.8,  scene:'s2', energy:1, sfx:'whoosh'},
+  {t:6.2,  say:"Mon nom est Mahamat.", show:['#s2-bar','#s2-l1']},
+  {t:7.3,  show:['#s2-nom'], sfx:'hit'},
+  {t:9.6,  say:"Mon prénom, Oumar Moussa Houma.", show:['#s2-l2']},
+  {t:10.8, show:['#s2-pre'], sfx:'hit'},
+
+  /* 3 · ÂGE */
+  {t:13.4, scene:'s3', energy:1.2, sfx:'whoosh'},
+  {t:13.6, say:"J'ai vingt-deux ans.", show:['#s3-ring']},
+  {t:14.3, show:['#s3-num'], count:{el:'#s3-num', to:22, dur:1.3}},
+  {t:15.8, show:['#s3-ans']},
+
+  /* 4 · ÉTUDES */
+  {t:17.4, scene:'s4', energy:.8, sfx:'whoosh'},
+  {t:17.6, say:"Je suis étudiant en sociologie,", show:['#s4-fac']},
+  {t:19.0, show:['#s4-soc'], sfx:'hit'},
+  {t:21.0, say:"niveau Licence 2."},
+  {t:21.9, show:['#s4-lic']},
+
+  /* 5 · PASSIONS */
+  {t:24.0, scene:'s5', energy:1.6, sfx:'whoosh'},
+  {t:24.2, say:"Ma passion, c'est l'informatique."},
+  {t:25.5, show:['#s5-w1','#s5-v1']},
+  {t:27.6, say:"L'intelligence artificielle."},
+  {t:27.7, show:['#s5-w2','#s5-v2'], hide:['#s5-v1'], dim:['#s5-w1']},
+  {t:30.2, say:"Et la cybersécurité."},
+  {t:30.8, show:['#s5-w3','#s5-v3'], hide:['#s5-v2'], dim:['#s5-w2']},
+
+  /* 6 · LIEU */
+  {t:33.4, scene:'s6', energy:.8, sfx:'whoosh'},
+  {t:33.6, say:"Je vis à N'Djamena, au Tchad.", show:['#s6-map']},
+  {t:34.8, show:['#s6-city','#s6-coord'], sfx:'hit'},
+  {t:36.0, show:['#s6-country']},
+
+  /* 7 · PRÉSENTATION PERSONNELLE */
+  {t:38.4, scene:'s7', energy:.7, sfx:'whoosh'},
+  {t:38.6, say:"Étudiant en sociologie, passionné de technologie.", show:['#s7-photo']},
+  {t:39.8, show:['#s7-a'], sfx:'hit'},
+  {t:40.1, show:['#s7-b']},
+  {t:40.4, show:['#s7-c']},
+  {t:41.0, show:['#s7-sur']},
+  {t:43.2, say:"Merci de m'avoir écouté.", show:['#s7-sig']},
+  {t:44.4, show:['#s7-tag']},
+  {t:47.8, black:true}
+];
+
+/* =====================================================================
+   3. OUTILS
+   ===================================================================== */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const stage = $('#stage');
+
+function fit(){
+  const w = Math.min(innerWidth, innerHeight*16/9);
+  stage.style.width = w+'px';
+  stage.style.height = (w*9/16)+'px';
+  stage.style.fontSize = (w/100)+'px';
+  const c = $('#fx'), dpr = Math.min(devicePixelRatio||1,2);
+  c.width = w*dpr; c.height = (w*9/16)*dpr;
+}
+addEventListener('resize', fit);
+
+/* Découpe le texte en mots / lettres pour l'animation lettre par lettre */
+function splitText(){
+  $$('.split').forEach(el=>{
+    const words = el.textContent.trim().split(/\s+/);
+    el.textContent = '';
+    let n = 0;
+    words.forEach((word,wi)=>{
+      const w = document.createElement('span'); w.className='w';
+      [...word].forEach(ch=>{
+        const s = document.createElement('span'); s.className='ch'; s.textContent=ch;
+        s.style.transitionDelay = (n++*0.06)+'s'; w.appendChild(s);
+      });
+      el.appendChild(w);
+      if(wi<words.length-1) el.appendChild(document.createTextNode(' '));
+    });
+  });
+}
+
+/* Éléments graphiques générés */
+function buildGraphics(){
+  // Fenêtre de code
+  const code = $('#codebox');
+  code.innerHTML = '<div class="dots"><i></i><i></i><i></i></div>';
+  const widths = [62,40,78,55,30,70,48,84,36,58];
+  widths.forEach((w,i)=>{
+    const d=document.createElement('div'); d.className='ln'+(i%4===2?' y':'');
+    d.style.setProperty('--w', w+'%'); d.style.transitionDelay=(i*.12)+'s';
+    d.style.marginLeft = (i%3===1?'2.4em':'0'); code.appendChild(d);
+  });
+  // Réseau de neurones
+  const svg = $('#nnet'), NS='http://www.w3.org/2000/svg';
+  const layers=[3,5,5,2], xs=[14,38,62,86], pts=[];
+  layers.forEach((n,l)=>{ pts[l]=[]; for(let i=0;i<n;i++) pts[l].push([xs[l], 50+(i-(n-1)/2)*15]); });
+  let k=0;
+  for(let l=0;l<3;l++) pts[l].forEach(a=>pts[l+1].forEach(b=>{
+    const p=document.createElementNS(NS,'path'); p.setAttribute('d',`M${a[0]} ${a[1]} L${b[0]} ${b[1]}`);
+    p.setAttribute('pathLength','1'); p.setAttribute('class','draw'); p.setAttribute('stroke','rgba(138,168,255,.45)');
+    p.setAttribute('stroke-width','.4'); p.style.transitionDelay=(k++%9*.12)+'s'; svg.appendChild(p);
+  }));
+  pts.flat().forEach((p,i)=>{
+    const c=document.createElementNS(NS,'circle'); c.setAttribute('cx',p[0]); c.setAttribute('cy',p[1]); c.setAttribute('r',2.4);
+    c.setAttribute('class','node'+(i%4===0?' pulse':'')); c.style.animationDelay=(i*.17)+'s'; svg.appendChild(c);
+  });
+  // Silhouette stylisée du Tchad (contour approximatif, longitude / latitude)
+  const geo=[[14.0,23.0],[24.0,19.5],[24.0,15.6],[22.9,14.4],[22.4,13.0],[22.0,12.2],[22.9,10.6],[23.6,9.0],[22.4,8.2],[20.0,9.1],[18.6,8.0],[16.6,7.6],[15.6,7.9],[14.6,9.7],[15.2,10.1],[14.4,11.5],[14.2,12.4],[14.1,13.1],[14.9,13.6],[15.5,15.4],[15.9,19.9]];
+  const proj=([lo,la])=>[((lo-13.2)/(24.4-13.2))*86+7, ((23.3-la)/(23.3-7.4))*124+8];
+  const d=geo.map((g,i)=>(i?'L':'M')+proj(g).map(v=>v.toFixed(1)).join(' ')).join(' ')+' Z';
+  const fill=document.createElementNS(NS,'path'); fill.setAttribute('d',d); fill.setAttribute('fill','url(#dots)'); fill.setAttribute('opacity','.9');
+  const line=document.createElementNS(NS,'path'); line.setAttribute('d',d); line.setAttribute('class','outline');
+  line.setAttribute('fill','none'); line.setAttribute('pathLength','1'); line.style.strokeDasharray='1'; line.style.strokeDashoffset='1';
+  line.style.transition='stroke-dashoffset 3s cubic-bezier(.6,0,.2,1)'; line.id='mapline';
+  const [px,py]=proj([15.05,12.11]);
+  const g=document.createElementNS(NS,'g');
+  g.innerHTML=`<circle class="ping" cx="${px}" cy="${py}" r="3"/><circle class="ping p2" cx="${px}" cy="${py}" r="3"/><circle cx="${px}" cy="${py}" r="1.8" fill="#f5b700"/>`;
+  $('#chadmap').append(fill,line,g);
+}
+
+/* =====================================================================
+   4. PARTICULES
+   ===================================================================== */
+const fx = {energy:.5, ps:[]};
+(function initParticles(){
+  for(let i=0;i<110;i++) fx.ps.push({x:Math.random(),y:Math.random(),z:Math.random()*.9+.1,
+    vx:(Math.random()-.5)*.00018,vy:-Math.random()*.00035-.00005,gold:Math.random()<.35});
+})();
+function drawFx(){
+  const c=$('#fx'), x=c.getContext('2d'), W=c.width, H=c.height;
+  x.clearRect(0,0,W,H);
+  fx.ps.forEach(p=>{
+    p.x+=p.vx*fx.energy*p.z*6; p.y+=p.vy*fx.energy*p.z*6;
+    if(p.y<-.02)p.y=1.02; if(p.x<-.02)p.x=1.02; if(p.x>1.02)p.x=-.02;
+    x.beginPath(); x.arc(p.x*W,p.y*H,(p.z*2.2+.4)*(W/1400),0,6.283);
+    x.fillStyle=p.gold?`rgba(245,183,0,${.15+p.z*.6})`:`rgba(140,175,255,${.12+p.z*.5})`; x.fill();
+  });
+}
+
+/* =====================================================================
+   5. AUDIO : musique synthétisée, effets, voix
+   ===================================================================== */
+const A = {
+  ctx:null, bus:null, master:null, pluck:null, ready:false,
+  start(withPad){
+    const C=window.AudioContext||window.webkitAudioContext; if(!C) return;
+    const ctx=this.ctx=new C(), master=this.master=ctx.createGain(), bus=this.bus=ctx.createGain();
+    master.gain.value=0; master.gain.linearRampToValueAtTime(.5,ctx.currentTime+5); master.connect(ctx.destination);
+    const delay=ctx.createDelay(1), fb=ctx.createGain(), lp=ctx.createBiquadFilter();
+    delay.delayTime.value=.42; fb.gain.value=.38; lp.type='lowpass'; lp.frequency.value=1800;
+    bus.connect(master); bus.connect(delay); delay.connect(lp); lp.connect(fb); fb.connect(delay); lp.connect(master);
+    this.ready=true;
+    if(!withPad) return;
+    [55,110,164.81,261.63,329.63].forEach((f,i)=>{
+      const flt=ctx.createBiquadFilter(), g=ctx.createGain(), lfo=ctx.createOscillator(), lg=ctx.createGain();
+      flt.type='lowpass'; flt.frequency.value=520; g.gain.value=.03;
+      lfo.frequency.value=.06+i*.017; lg.gain.value=220; lfo.connect(lg); lg.connect(flt.frequency); lfo.start();
+      [-6,6].forEach(det=>{ const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f; o.detune.value=det; o.connect(flt); o.start(); });
+      flt.connect(g); g.connect(bus);
+    });
+    const scale=[220,261.63,329.63,392,440,523.25];
+    this.pluck=setInterval(()=>{
+      if(ctx.state!=='running') return;
+      const o=ctx.createOscillator(), g=ctx.createGain(), t=ctx.currentTime;
+      o.type='sine'; o.frequency.value=scale[Math.floor(Math.random()*scale.length)];
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.05,t+.02); g.gain.exponentialRampToValueAtTime(.0005,t+1.8);
+      o.connect(g); g.connect(bus); o.start(t); o.stop(t+2);
+    },750);
+  },
+  whoosh(){
+    if(!this.ready) return; const ctx=this.ctx, t=ctx.currentTime;
+    const buf=ctx.createBuffer(1,ctx.sampleRate*1.6,ctx.sampleRate), d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+    const s=ctx.createBufferSource(); s.buffer=buf;
+    const f=ctx.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2;
+    f.frequency.setValueAtTime(250,t); f.frequency.exponentialRampToValueAtTime(3200,t+1.1);
+    const g=ctx.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.22,t+.6); g.gain.linearRampToValueAtTime(0,t+1.4);
+    s.connect(f); f.connect(g); g.connect(this.bus); s.start(t);
+  },
+  hit(){
+    if(!this.ready) return; const ctx=this.ctx, t=ctx.currentTime;
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(95,t); o.frequency.exponentialRampToValueAtTime(34,t+.7);
+    g.gain.setValueAtTime(.55,t); g.gain.exponentialRampToValueAtTime(.001,t+.9);
+    o.connect(g); g.connect(this.bus); o.start(t); o.stop(t+1);
+  },
+  stop(){ clearInterval(this.pluck); if(this.ctx) this.ctx.close(); this.ctx=null; this.ready=false; }
+};
+
+function pickVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  const fr=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith('fr'));
+  const male=/thomas|henri|paul|claude|daniel|antoine|remy|rémy|male|homme/i;
+  return fr.find(v=>male.test(v.name)) || fr.find(v=>v.lang===CONFIG.voiceLang) || fr[0] || null;
+}
+function speak(text){
+  if(!opts.voice || voiceEl || !('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=CONFIG.voiceLang; u.rate=CONFIG.voiceRate; u.pitch=.95; u.volume=1;
+  const v=pickVoice(); if(v) u.voice=v;
+  speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window) speechSynthesis.onvoiceschanged=()=>{};
+
+/* =====================================================================
+   6. MOTEUR DE LECTURE
+   ===================================================================== */
+const opts = {voice:true, music:true};
+let voiceEl=null, musicEl=null;
+let playing=false, elapsed=0, base=0, idx=0, capUntil=0, raf=0;
+
+function resetVisuals(){
+  $$('.in').forEach(e=>e.classList.remove('in'));
+  $$('.dim').forEach(e=>e.classList.remove('dim'));
+  $$('.scene').forEach(s=>s.classList.remove('active'));
+  $('#s3-num').textContent='0';
+  $('#cap').classList.remove('on'); $('#black').classList.remove('on');
+  const m=$('#mapline'); if(m){ m.style.strokeDashoffset='1'; }
+  // relance les animations CSS à durée fixe (Ken Burns, brillance)
+  $$('.pframe img,.pframe .shine').forEach(e=>{ e.style.animation='none'; void e.offsetWidth; e.style.animation=''; });
+}
+
+function runCue(c){
+  if(c.scene){
+    $$('.scene').forEach(s=>s.classList.toggle('active', s.id===c.scene));
+    if(c.scene==='s6'){ setTimeout(()=>{ const m=$('#mapline'); if(m) m.style.strokeDashoffset='0'; },300); }
+  }
+  if(c.energy!==undefined) fx.energy=c.energy;
+  (c.show||[]).forEach(s=>$$(s).forEach(e=>e.classList.add('in')));
+  (c.hide||[]).forEach(s=>$$(s).forEach(e=>e.classList.remove('in')));
+  (c.dim||[]).forEach(s=>$$(s).forEach(e=>e.classList.add('dim')));
+  if(c.count) countUp(c.count);
+  if(c.say){ speak(c.say); const cap=$('#cap'); cap.textContent=c.say; cap.classList.add('on'); capUntil=c.t+Math.max(1.8,c.say.length*.085); }
+  if(c.sfx && opts.music) A[c.sfx]();
+  if(c.black) $('#black').classList.add('on');
+}
+
+function countUp({el,to,dur}){
+  const node=$(el), t0=performance.now();
+  (function step(now){
+    const k=Math.min(1,(now-t0)/(dur*1000));
+    node.textContent=Math.round(to*(1-Math.pow(1-k,3)));
+    if(k<1) requestAnimationFrame(step);
+  })(t0);
+}
+
+function tick(now){
+  if(!playing) return;
+  elapsed=(now-base)/1000;
+  while(idx<CUES.length && CUES[idx].t<=elapsed) runCue(CUES[idx++]);
+  if(capUntil && elapsed>capUntil){ $('#cap').classList.remove('on'); capUntil=0; }
+  drawFx();
+  if(elapsed>=CONFIG.total){ finish(); return; }
+  raf=requestAnimationFrame(tick);
+}
+
+function startAudio(){
+  if(opts.music){ A.start(!musicEl); }
+  if(musicEl){ musicEl.currentTime=0; musicEl.volume=0; musicEl.play(); fadeEl(musicEl,CONFIG.musicVolume,4000); }
+  if(voiceEl){ voiceEl.currentTime=0; voiceEl.volume=1; voiceEl.play(); }
+}
+function fadeEl(el,to,ms){ const t0=performance.now(),v0=el.volume;
+  (function s(n){ const k=Math.min(1,(n-t0)/ms); el.volume=v0+(to-v0)*k; if(k<1) requestAnimationFrame(s); })(t0); }
+
+function play(){
+  resetVisuals(); idx=0; elapsed=0; capUntil=0;
+  startAudio(); playing=true; base=performance.now();
+  $('#bPause').textContent='Pause'; raf=requestAnimationFrame(tick);
+  showCtrl(true); setTimeout(()=>showCtrl(false),2500);
+}
+function pause(){
+  if(!playing) return;
+  playing=false; cancelAnimationFrame(raf);
+  if('speechSynthesis' in window) speechSynthesis.pause();
+  if(A.ctx) A.ctx.suspend(); musicEl&&musicEl.pause(); voiceEl&&voiceEl.pause();
+  $('#bPause').textContent='Reprendre'; showCtrl(true);
+}
+function resume(){
+  if(playing) return;
+  playing=true; base=performance.now()-elapsed*1000;
+  if('speechSynthesis' in window) speechSynthesis.resume();
+  if(A.ctx) A.ctx.resume(); musicEl&&musicEl.play(); voiceEl&&voiceEl.play();
+  $('#bPause').textContent='Pause'; raf=requestAnimationFrame(tick); showCtrl(false);
+}
+function stopAll(){
+  playing=false; cancelAnimationFrame(raf);
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  A.stop(); musicEl&&musicEl.pause(); voiceEl&&voiceEl.pause();
+}
+function finish(){
+  playing=false; fx.energy=.3;
+  if(A.master&&A.ctx){ A.master.gain.cancelScheduledValues(0); A.master.gain.linearRampToValueAtTime(0,A.ctx.currentTime+1.2); }
+  if(musicEl) fadeEl(musicEl,0,1200);
+  setTimeout(stopAll,1400);
+  $('#bPause').textContent='Rejouer'; showCtrl(true);
+}
+function showCtrl(on){ $('#ctrl').classList.toggle('show',on); }
+
+/* =====================================================================
+   7. INTERFACE
+   ===================================================================== */
+$('#bGo').onclick=()=>{
+  opts.voice=$('#optVoice').checked; opts.music=$('#optMusic').checked;
+  const fv=$('#fileVoice').files[0], fm=$('#fileMusic').files[0];
+  voiceEl = fv ? new Audio(URL.createObjectURL(fv)) : null;
+  musicEl = fm ? new Audio(URL.createObjectURL(fm)) : null;
+  if(musicEl) musicEl.loop=true;
+  if(!fm && !opts.music) musicEl=null;
+  $('#start').style.display='none';
+  play();
+};
+$('#bPause').onclick=()=>{
+  if(playing) pause();
+  else if(elapsed>=CONFIG.total-.01 || !idx || elapsed===0 && !playing && $('#bPause').textContent==='Rejouer'){ stopAll(); play(); }
+  else resume();
+};
+$('#bRestart').onclick=()=>{ stopAll(); play(); };
+$('#bFull').onclick=()=>{ const el=document.documentElement; (document.fullscreenElement?document.exitFullscreen():el.requestFullscreen&&el.requestFullscreen()); };
+$('#stage').addEventListener('click',()=>{ playing?pause():(elapsed>0&&elapsed<CONFIG.total&&resume()); });
+
+/* =====================================================================
+   8. INITIALISATION
+   ===================================================================== */
+fit(); splitText(); buildGraphics();
+(function loadPhoto(){
+  const img=$('#photo');
+  img.onerror=()=>$('#pframe').classList.add('err');
+  img.src=CONFIG.image;
+})();
+</script>
+</body>
+</html>
